@@ -1,0 +1,26 @@
+{
+    "name": "converge/dolittle",
+    "type": "library",
+    "description": "Converge Dolittle Library",
+    "keywords": ["rexster", "php", "graphdb", "rexpro"],
+    "homepage": "https://github.com/ConvergeSystems/Dolittle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Travis Black",
+            "email": "travisb@vrazzle.com"
+        },
+        {
+            "name": "Converge Systems",
+            "homepage": "http://convergesystems.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": { "Converge\\Dolittle": "" }
+    },
+    "target-dir": "Converge/Dolittle",
+    "minimum-stability": "dev"
+}
