@@ -202,7 +202,7 @@ class Message
         if ($this->_message_size) {
             return $this->_message_size;
         }
-        
+
         if ($this->_message_body_serialized) {
             $this->_message_size = mb_strlen($this->_message_body_serialized, 'ISO-8859-1');
         } elseif ($this->_message_body) {
@@ -350,6 +350,10 @@ class Message
             throw new Exception('Message::$_message_body is invalid type.');
         }
 
+        $this->_message_size = null;
+        $this->_message_body_serialized = null;
+        $this->_message_type = null;
+        
         $protocol_version = $this->getProtocolVersion();
         $serializer_type  = $this->getSerializerType();
         $message_type     = $this->getMessageType();
@@ -390,6 +394,7 @@ class Message
         }
         
         $this->_message_body = $this->getMessageTypeFromKey($this->deserializeBody());
+        $this->_message_body_serialized = null;
         
         return $this;
     }

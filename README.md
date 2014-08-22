@@ -14,28 +14,67 @@ The Message returned will have basic meta-data from the Rexster server, as well 
 ####Usage Example
 
 ```php
-$client  = new \Converge\Dolittle\Client('localhost:8184');
-$results = $client->executeScript('g.V()', 'my_graph_name', array('BoundParam1' => 'boundValue1'))->getMessageBody();
+<?php
+    
+require_once('vendor/autoload.php');
 
-get_class($results); // \Converge\Dolittle\Message\Body\Response\Script
-echo($results->getBindings()); // array('BoundParam1' => 'boundValue1')
-echo($results->getResults()); // array('0' => array('type' => 'vertex', '_id' => '12345'))
-echo($results->toArray()); // See Below
+$graph_name = 'converge';
+$params = array('MY_BOUND_PARAM' => 'converge engineering');
 
+$client  = new \Converge\Dolittle\Client('tcp://localhost:8184');
+$client->executeScript('g.addVertex(name:MY_BOUND_PARAM)', $graph_name, $params);
+
+$results = $client->executeScript('g.V("name", MY_BOUND_PARAM)', $graph_name, $params)->getMessageBody();
+
+echo(get_class($results)); // Converge\Dolittle\Message\Body\Response\Script
+var_dump($results->getResults()); // See Below
 /*
- array(
-    'session'  => '00000000-0000-0000-0000-000000000000',
-    'request'  => '00000000-0000-0000-0000-000000000000',
-    'meta'     => array(),
-    'results'  => array(
-        '0' => array(
-            'type' => 'vertex',
-            '_id' => '12345'
-        )
-     ),
-    'bindings' => array('BoundParam1' => 'boundValue1'),
-)
-*/    
+array(1) {
+  [0] =>
+  array(3) {
+    '_type' =>
+    string(6) "vertex"
+    '_id' =>
+    string(6) "440068"
+    '_properties' =>
+    array(1) {
+      'name' =>
+      string(20) "converge engineering"
+    }
+  }
+}
+*/
+
+var_dump($results->toArray()); // See Below
+/*
+array(5) {
+  'session' =>
+  string(36) "00000000-0000-0000-0000-000000000000"
+  'request' =>
+  string(36) "a2bedfa8-46d8-4df7-937c-81c8a3e319d3"
+  'meta' =>
+  array(0) {
+  }
+  'results' =>
+  array(1) {
+    [0] =>
+    array(3) {
+      '_type' =>
+      string(6) "vertex"
+      '_id' =>
+      string(6) "440068"
+      '_properties' =>
+      array(1) {
+        'name' =>
+        string(20) "converge engineering"
+      }
+    }
+  }
+  'bindings' =>
+  array(0) {
+  }
+}
+*/       
 ````
 
 ###Advanced Usage
@@ -45,36 +84,84 @@ Some use cases may require more advanced usage. In this case, you will need to i
 ####Usage Example
 
 ```php
-$client  = new \Converge\Dolittle\Client('localhost:8184');
+<?php
+require_once('vendor/autoload.php');
 
-$script  = new \Converge\Dolittle\Message\Body\Request\Script('g.V()');
-$script->setBindings(array('BoundParam1' => 'boundValue1'));
-$script->setMeta(array('graphName' => 'my_graph_name'));
+$graph_name = 'converge';
+$params  = array('MY_BOUND_PARAM' => 'converge engineering');
+$client  = new \Converge\Dolittle\Client('tcp://localhost:8184');
+
+$script  = new \Converge\Dolittle\Message\Body\Request\Script();
+$script->setScript('g.addVertex(name:MY_BOUND_PARAM)');
+$script->setBindings($params);
+$script->setMeta(array('graphName' => $graph_name));
+
+$message = new \Converge\Dolittle\Message();
+$message->setMessageBody($script);
+$client->send($message);
+
+$script  = new \Converge\Dolittle\Message\Body\Request\Script();
+$script->setScript('g.V("name", MY_BOUND_PARAM)');
+$script->setBindings($params);
+$script->setMeta(array('graphName' => $graph_name));
 
 $message = new \Converge\Dolittle\Message();
 $message->setMessageBody($script);
 
+$message->setMessageBody($script);
 $client->send($message);
-$results = $client->getResponse()->getMessageBody();
 
-get_class($results); // \Converge\Dolittle\Message\Body\Response\Script
-echo($results->getBindings()); // array('BoundParam1' => 'boundValue1')
-echo($results->getResults()); // array('0' => array('type' => 'vertex', '_id' => '12345'))
-echo($results->toArray()); // See Below
+$response = $client->getResponse();
+$results = $response->getMessageBody();
 
+echo(get_class($results)); // Converge\Dolittle\Message\Body\Response\Script
+var_dump($results->getResults()); // See Below
 /*
- array(
-    'session'  => '00000000-0000-0000-0000-000000000000',
-    'request'  => '00000000-0000-0000-0000-000000000000',
-    'meta'     => array(),
-    'results'  => array(
-        '0' => array(
-            'type' => 'vertex',
-            '_id' => '12345'
-        )
-     ),
-    'bindings' => array('BoundParam1' => 'boundValue1'),
-)
+array(1) {
+  [0] =>
+  array(3) {
+    '_type' =>
+    string(6) "vertex"
+    '_id' =>
+    string(6) "440676"
+    '_properties' =>
+    array(1) {
+      'name' =>
+      string(20) "converge engineering"
+    }
+  }
+}
+*/
+
+var_dump($results->toArray()); // See Below
+/*
+array(5) {
+  'session' =>
+  string(36) "00000000-0000-0000-0000-000000000000"
+  'request' =>
+  string(36) "e66b643a-5b90-4ca6-b7bf-d5ee52ddeb62"
+  'meta' =>
+  array(0) {
+  }
+  'results' =>
+  array(1) {
+    [0] =>
+    array(3) {
+      '_type' =>
+      string(6) "vertex"
+      '_id' =>
+      string(6) "440676"
+      '_properties' =>
+      array(1) {
+        'name' =>
+        string(20) "converge engineering"
+      }
+    }
+  }
+  'bindings' =>
+  array(0) {
+  }
+}
 */
 ````
 
@@ -84,4 +171,3 @@ echo($results->toArray()); // See Below
 - [ ] Add MsgPack Support
 - [ ] Finish Documentation
 - [ ] Build Unit Tests
-- [ ] Add to Composer

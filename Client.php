@@ -23,13 +23,20 @@ class Client
     private $_socket;
     
     /**
+     * The URI of the Rexster Server
+     *
+     * @var string $_host_uri URI of the rexster server
+     */
+    private $_host_uri;
+    
+    /**
      * Constructor for \Converge\Dolittle\Client
      *
      * @param string $host_uri Fully qualified URI for Rexster server
      */
     public function __construct($host_uri)
     {
-        $this->connectSocket($host_uri);
+        $this->_host_uri = $host_uri;
     }
     
     /**
@@ -81,6 +88,8 @@ class Client
         $message->setMessageBodySerialized(@stream_get_contents($this->_socket, $message->getMessageSize()));
         $message->unpack();
         
+        $this->destroySocket();
+        
         return $message;
     }
     
@@ -95,6 +104,7 @@ class Client
      */
     public function send(Message $message)
     {
+        $this->connectSocket();
         $packed = $message->pack();
 
         $write = @fwrite($this->_socket, $packed);
@@ -114,10 +124,10 @@ class Client
      * @throws Exception\Socket could not connect the socket.
      * @return bool true on success false on error
      */
-    private function connectSocket($host_uri)
+    private function connectSocket()
     {
-        $this->_socket = @stream_socket_client(
-            $host_uri,
+        $this->_socket = stream_socket_client(
+            $this->_host_uri,
             $errno, 
             $errorMessage,
             ini_get("default_socket_timeout")
@@ -136,11 +146,23 @@ class Client
      * 
      * @return boolean were we successfully disconnected?
      */
-    public function __destroy()
+    public function __destruct()
+    {
+        $this->destroySocket();
+        
+        return true;
+    }
+    
+    /**
+     * Destroy the socket connection if it exists
+     *
+     * @return bool
+     */
+    private function destroySocket()
     {
         if($this->_socket !== null)
         {
-            @stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+            stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
             $this->_socket = null;
         }
         
