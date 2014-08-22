@@ -107,8 +107,6 @@ $script->setMeta(array('graphName' => $graph_name));
 
 $message = new \Converge\Dolittle\Message();
 $message->setMessageBody($script);
-
-$message->setMessageBody($script);
 $client->send($message);
 
 $response = $client->getResponse();
