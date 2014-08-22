@@ -31,7 +31,9 @@ class Script extends \Converge\Dolittle\Message\Body\Response
      */
     public function setBindings(array $bindings)
     {
-        return $this->_bindings = $bindings;
+        $this->_bindings = $bindings;
+        
+        return $this;
     }
     
     /**
@@ -39,11 +41,13 @@ class Script extends \Converge\Dolittle\Message\Body\Response
      *
      * @param array $results the results from the server
      * @uses $_results to store the results.
-     * @return array of results from RexPro
+     * @return $this
      */
     public function setResults(array $results)
     {
-        return $this->_results = $results;
+        $this->_results = $results;
+        
+        return $this;
     }
     
     /**
