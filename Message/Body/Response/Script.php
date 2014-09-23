@@ -109,7 +109,7 @@ class Script extends \Converge\Dolittle\Message\Body\Response
         $this->setSession($raw[0]);
         $this->setRequest($raw[1]);
         $this->setMeta($raw[2]);
-        $this->setResults((is_array($raw[3]) ? $raw[3] : array()));
+        $this->setResults((is_array($raw[3]) ? $raw[3] : array($raw[3])));
         $this->setBindings($raw[4]);
         
         return $this;
