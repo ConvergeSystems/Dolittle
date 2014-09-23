@@ -80,12 +80,13 @@ class Client
     public function getResponse()
     {
         $message = new Message;
-        $message->setProtocolVersion((int)hexdec(bin2hex(@stream_get_contents($this->_socket, 1))));
-        $message->setSerializerType((int)hexdec(bin2hex(@stream_get_contents($this->_socket, 1))));
-        $message->setReserved((int)hexdec(bin2hex(@stream_get_contents($this->_socket, 4))));
-        $message->setMessageType((int)hexdec(bin2hex(@stream_get_contents($this->_socket, 1))));
-        $message->setMessageSize((int)hexdec(bin2hex(@stream_get_contents($this->_socket, 4))));
-        $message->setMessageBodySerialized(@stream_get_contents($this->_socket, $message->getMessageSize()));
+        $stream = stream_get_contents($this->_socket, 11);
+        $message->setProtocolVersion((int)hexdec(bin2hex(substr($stream, 0, 1))));
+        $message->setSerializerType((int)hexdec(bin2hex(substr($stream, 1, 1))));
+        $message->setReserved((int)hexdec(bin2hex(substr($stream, 2, 4))));
+        $message->setMessageType((int)hexdec(bin2hex(substr($stream, 6, 1))));
+        $message->setMessageSize((int)hexdec(bin2hex(substr($stream, 7, 4))));
+        $message->setMessageBodySerialized(stream_get_contents($this->_socket, $message->getMessageSize(), 11));
         $message->unpack();
         
         $this->destroySocket();
